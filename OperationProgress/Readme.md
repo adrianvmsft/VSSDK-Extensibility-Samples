@@ -2,7 +2,7 @@
 
 Simulates IntelliSense operations in progress and displays the status
 
-* Technologies: Visual Studio 2019.1 SDK
+* Technologies: Visual Studio 2019.5 SDK
 * Topics: Operation Progress
 
 
