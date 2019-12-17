@@ -17,7 +17,7 @@ This Visual Studio Package demonstrates how to
 
 ## Requirements
 
-[ Visual Studio 2019 Update 1 ](https://www.visualstudio.com/products/visual-studio-community-vs?wt.mc_id=o~display~github~vssdk)
+[ Visual Studio 2019 Update 5 ](https://www.visualstudio.com/products/visual-studio-community-vs?wt.mc_id=o~display~github~vssdk)
 
 
 ## Get all samples
@@ -29,7 +29,7 @@ Clone the repo ([How to](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git
 
 ## Run the sample
 
-_Note: "Operation Progress" is a new feature in Visual Studio 2019 Update 1. This sample will not build under or work with earlier versions of Visual Studio._
+_Note: "Operation Progress" is a new feature in Visual Studio 2019 Update 1. Some additions to the API were made in Visual Studio 2019 Update 5. This sample will not build under or work with earlier versions of Visual Studio._
 
 ### Opening **Operation Progress Tool Window**
  1. To run the sample, hit F5 or choose the **Debug &gt; Start Debugging** menu command. A new instance of Visual Studio will launch under the experimental hive.

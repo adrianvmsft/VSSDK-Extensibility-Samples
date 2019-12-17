@@ -37,7 +37,7 @@ namespace OperationProgress
 
         public static OperationProgressPackage Instance { get; private set; }
 
-        public IVsOperationProgress VsOperationProgressService { get; private set; }
+        public IVsOperationProgress2 VsOperationProgressService { get; private set; }
 
         public IVsOperationProgressStatusService VsOperationProgressStatusService { get; private set; }
 
@@ -59,12 +59,13 @@ namespace OperationProgress
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await OperationProgressToolWindowCommand.InitializeAsync(this);
 
-            this.VsOperationProgressService = await this.GetServiceAsync(typeof(SVsOperationProgress)) as IVsOperationProgress;
-            // Post Visual Studio 2019 Update 2, should use:
-            // this.OperationProgressStatusService = await this.GetServiceAsync(typeof(SVsOperationProgressStatusService)) as IVsOperationProgressStatusService;
+            this.VsOperationProgressService = await this.GetServiceAsync(typeof(SVsOperationProgress)) as IVsOperationProgress2;
+            if (this.VsOperationProgressService == null)
+            {
+                throw new InvalidOperationException("IVsOperationProgress2 requires Visual Studio version 16.5 or newer.");
+            }
 
-            // Version 16.1:
-            this.VsOperationProgressStatusService = this.VsOperationProgressService as IVsOperationProgressStatusService;
+            this.VsOperationProgressStatusService = await this.GetServiceAsync(typeof(SVsOperationProgressStatusService)) as IVsOperationProgressStatusService;
         }
 
         #endregion

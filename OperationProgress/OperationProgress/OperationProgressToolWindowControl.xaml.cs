@@ -18,7 +18,7 @@
         /// <summary>
         /// Visual Studio Operation Progress Service, that enables registering work with Operation Progress.
         /// </summary>
-        private readonly IVsOperationProgress vsOperationProgressService;
+        private readonly IVsOperationProgress2 vsOperationProgressService;
 
         /// <summary>
         /// Visual Studio Operation Progress Status Service, that offers information about operations in progress.
@@ -29,11 +29,6 @@
         /// Joinable Task Factory.
         /// </summary>
         private readonly JoinableTaskFactory joinableTaskFactory;
-
-        /// <summary>
-        /// Provides access to the IntelliSense stage
-        /// </summary>
-        IOperationProgressStageAccess intelliSenseStageAccess;
 
         /// <summary>
         /// Task Completion Source that represents the work submitted to the IntelliSense stage.
@@ -74,13 +69,10 @@
         /// </summary>
         private void IntelliSenseCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            if (this.intelliSenseStageAccess != null)
+            if (this.taskCompletionSource != null)
             {
                 return;
             }
-
-            // Get access to the stage
-            this.intelliSenseStageAccess = vsOperationProgressService.AccessStage(StageId, "test", 1);
 
             // Create a task that tracks the work and register it with the operation progress
             this.taskCompletionSource = new TaskCompletionSource<bool>();
@@ -89,7 +81,14 @@
             // We use JoinableTask to allow JoinableTaskFactory to track the entire chain between operation progress producers and awaiters in order to avoid deadlocks.
             JoinableTask joinableTask = this.joinableTaskFactory.RunAsync(() => taskCompletionSource.Task);
 
-            intelliSenseStageAccess.RegisterTask(new OperationProgressTask(joinableTask, "Test", () => Task.FromResult("Test")));
+            // Get access to the stage
+            _ = vsOperationProgressService.RegisterStageOperationTasksAsync(StageId, "test", 1,
+                (intelliSenseStageAccess) =>
+                {
+                    intelliSenseStageAccess.RegisterTask(new OperationProgressTask(joinableTask, "Test", () => Task.FromResult("Test")));
+
+                    return Task.CompletedTask;
+                });
         }
 
         /// <summary>
@@ -100,10 +99,6 @@
             // Complete the task
             this.taskCompletionSource.SetResult(true);
             this.taskCompletionSource = null;
-
-            // Close the access to the stage
-            this.intelliSenseStageAccess.Dispose();
-            this.intelliSenseStageAccess = null;
         }
 
         /// <summary>
